@@ -35,7 +35,7 @@ function slot_utils.add_canister_amount(slot, type, amount)
         local amount_to_add = math.min(diff, amount)
         slot.stats["type"] = type
         slot.stats["amount"] = slot.stats["amount"] + amount_to_add
-        change_stats(slot, slot.stats)
+        slot_utils.change_stats(slot, slot.stats)
         api_slot_redraw(slot.id)
         return math.max(0, amount - amount_to_add)
     end
@@ -43,6 +43,26 @@ end
 
 ---@param slot slot
 ---@param newstats table
-function change_stats(slot, newstats)
+function slot_utils.change_stats(slot, newstats)
     api_sp(slot.id, "stats", newstats)
+end
+
+function slot_utils.set_or_incr_slot(slot, item, amount)
+    if (slot == nil) then return end
+    if (slot.item == "") then
+        api_slot_set(slot.id, item, math.min(amount, 99))
+    else
+        api_slot_incr(slot.id, math.min(99 - slot.count, amount))
+    end
+end
+
+---@return table
+function slot_utils.create_frame(filled, uncapped, productivity, flowers, species)
+    return {
+        filled = filled,
+        uncapped = uncapped,
+        flowers = table.concat(flowers, ":"),
+        productivity = productivity,
+        species = species
+    }
 end

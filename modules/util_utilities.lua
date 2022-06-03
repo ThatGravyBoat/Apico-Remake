@@ -68,3 +68,17 @@ end
 function utils.starts(value,stats)
     return string.sub(value,1, string.len(stats)) == stats
 end
+
+function utils.split(s, delimiter)
+    result = {};
+    for match in (s..delimiter):gmatch("(.-)"..delimiter) do
+        table.insert(result, match);
+    end
+    return result;
+end
+
+function utils.update_fields(menu_id, field)
+    local fields = api_gp(menu_id, "_fields")
+    table.insert(fields, field)
+    api_sp(menu_id, "_fields", fields)
+end

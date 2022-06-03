@@ -48,8 +48,6 @@ function auto_squeezer_define(menu_id)
     api_dp(menu_id, "p_drain_counter", 0)
     api_dp(menu_id, "p_has_canister", false)
     api_dp(menu_id, "p_draining", false)
-
-    api_sp(menu_id, "_fields", {"p_active_hives", "p_battery"})
 end
 
 function auto_squeezer_change(menu_id)

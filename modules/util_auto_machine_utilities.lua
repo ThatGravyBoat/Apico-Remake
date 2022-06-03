@@ -8,6 +8,9 @@ function auto_machine_utils.define_battery(menu_id, x, y)
     api_dp(menu_id, "p_hive_counter", 0)
     api_dp(menu_id, "p_active_hives", 0)
     api_dp(menu_id, "p_battery", 0)
+
+    utils.update_fields(menu_id, "p_active_hives")
+    utils.update_fields(menu_id, "p_battery")
 end
 
 function auto_machine_utils.draw_battery(menu_id)

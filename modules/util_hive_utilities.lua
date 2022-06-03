@@ -33,3 +33,16 @@ end
 function hive_utils.get_active_holder_count(coordinate, radius)
     return #hive_utils.get_active_bee_holder(coordinate, radius)
 end
+
+function hive_utils.get_multiplier(productivity)
+    if (productivity == "Sluggish" or productivity == "Slowest" or productivity == "Slow") then
+        return 1
+    elseif (productivity == "Normal" or productivity == "Fast") then
+        return 2
+    elseif (productivity == "Fastest") then
+        return 3
+    elseif (productivity == "Brisk") then
+        return 4
+    end
+    return 0
+end
