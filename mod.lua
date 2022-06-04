@@ -12,6 +12,7 @@ function register()
           "obj_trash_bin",
           "obj_auto_squeezer",
           "obj_auto_centrifuge",
+          "obj_auto_sawmill",
 
           --Utils
           "util_logger",
@@ -29,6 +30,7 @@ function init()
     trash_bin.register()
     auto_squeezer.register()
     auto_centrifuge.register()
+    auto_sawmill.register()
 
     if (DEV_MODE) then
         api_set_devmode(true)
