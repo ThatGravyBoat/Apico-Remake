@@ -104,14 +104,10 @@ function auto_centrifuge.register()
     api_define_menu_object(auto_centrifuge.object, "sprites/objects/auto_centrifuge.png","sprites/menus/auto_centrifuge.png", auto_centrifuge.scripts)
 end
 
-function auto_centrifuge_draw(menu_id)
-    auto_machine_utils.draw_battery(menu_id)
-    api_draw_tank(api_gp(menu_id, "tank_gui"))
-end
-
 function auto_centrifuge_define(menu_id)
     api_define_tank(menu_id, 0, 1000, 'honey', 214, 14, 'large')
     auto_machine_utils.define_battery(menu_id, 48, 14)
+    utils.define_gui_with_texture(menu_id, "progress_bar", 64, 20, "auto_centrifuge", "sprites/menus/auto_squeezer_progress_bar.png")
 
     api_dp(menu_id, "p_working", false)
     api_dp(menu_id, "p_progress", 0)
@@ -120,8 +116,41 @@ function auto_centrifuge_define(menu_id)
     api_dp(menu_id, "p_draining", false)
 end
 
+function auto_centrifuge_draw(menu_id)
+    auto_machine_utils.draw_battery(menu_id)
+    api_draw_tank(api_gp(menu_id, "tank_gui"))
+
+    --region Progress Bar
+    do
+        local sprite = api_gp(menu_id, "progress_bar_sprite")
+        local gui = api_get_inst(api_gp(menu_id, "progress_bar"))
+        local coords = utils.gui_coordinates_with_gui(gui)
+
+        api_draw_sprite(sprite, 1, coords.x, coords.y)
+        local progress = api_gp(menu_id, "p_progress") * 32
+
+        api_draw_sprite_part(sprite, 2, 0, 0, progress, 10, coords.x, coords.y)
+        api_draw_sprite(sprite, 1, coords.x, coords.y)
+
+        if api_get_highlighted("ui") == gui["id"] then
+            api_draw_sprite(sprite, 0, coords.x, coords.y)
+        end
+    end
+    --endregion
+    --region Draining
+    do
+        local coordinate = utils.gui_coordinates(menu_id)
+
+        if (api_gp(menu_id, "p_has_canister") and api_gp(menu_id, "p_draining") and api_gp(menu_id, "tank_amount") > 0) then
+            api_draw_sprite(auto_squeezer.draining_sprite, 1, coordinate.x + 218, coordinate.y + 56)
+        end
+    end
+    --endregion
+end
+
 function auto_centrifuge_change(menu_id)
     auto_centrifuge.check_inputs(menu_id)
+    api_sp(menu_id, "p_has_canister", api_get_slot(menu_id, 23)["item"] ~= "")
 end
 
 function auto_centrifuge_tick(menu_id)
@@ -146,6 +175,22 @@ function auto_centrifuge_tick(menu_id)
             end
         end
     end
+
+    if (api_gp(menu_id, "p_has_canister")) then
+        utils.ap(menu_id, "p_drain_counter", 1)
+        if (api_gp(menu_id, "p_drain_counter") == 10) then
+            slot_utils.drain_tank(menu_id, 23, 5)
+            api_sp(menu_id, "p_drain_counter", 0)
+        end
+        api_sp(menu_id, "p_draining", slot_utils.get_canister_diff(api_get_slot(menu_id, 23)) > 0)
+    end
+end
+
+function auto_centrifuge_progress_bar_tooltip(menu_id)
+    return {
+        { "Frame Extraction", "FONT_WHITE"},
+        { tostring(api_gp(menu_id, "p_progress") * 100) .. "%", "FONT_BGREY"},
+    }
 end
 
 ---@return slot[]
