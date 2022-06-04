@@ -21,7 +21,13 @@ function hive_utils.get_active_bee_holder(coordinate, radius)
     local active_hives = {}
 
     for _, v in ipairs(hive_utils.get_bee_holders(coordinate, radius)) do
-        if (api_gp(v.menu_id, "working") == true) then
+        local working = api_gp(v.menu_id, "working")
+        local sleeping = api_gp(v.menu_id, "status_sleeping")
+        local wet = api_gp(v.menu_id, "status_wet")
+        local happy = api_gp(v.menu_id, "status_happy")
+        local calm = api_gp(v.menu_id, "status_calm")
+
+        if (working and sleeping == false and wet == false and happy and calm) then
             table.insert(active_hives, 1, v)
         end
     end
